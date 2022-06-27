@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+    db:
+        restart: always
+        image: mysql/mysql-server:8.0.29
+        container_name: mysql_con
+        expose:
+            - "3306"
+        networks:
+            - backend
+        environment:
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        volumes:
+            - dbdata:/var/lib/mysql
+
+    web:
+        restart: always
+        build: ./dockerized-mlflow/
+        image: mlflow_server_ima
+        container_name: mlflow_server_con
+        expose:
+            - "5000"
+        networks:
+            - frontend
+            - backend
+        command: >
+            bash -c "mlflow server
+                    --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+                    --default-artifact-root ./mlrunz    
+                    "
+
+    nginx:
+        restart: always
+        build: ./dockerized-nginx/
+        image: nginx_ima
+        container_name: nginx_con
+        ports:
+            - "80:80"
+        networks:
+            - frontend
+        depends_on:
+            - web
+
+networks:
+    frontend:
+        driver: bridge
+    backend:
+        driver: bridge
+
+volumes:
+    dbdata:

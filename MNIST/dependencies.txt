@@ -1,0 +1,6 @@
+Development:
+black
+
+Core:
+scikit-learn
+mlflow
