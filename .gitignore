@@ -164,12 +164,19 @@
 
 # vscode
 **/.vscode/
+*.code-workspace
 
 # mlflow
 **/mlruns/
 
 # Environments (custom)
-**/env_*
-!**/.env
+**/env*
+# !**/.env
+**/dependencies.txt
 
+# data
 **/skdata
+**/*.db
+
+# Notebooks
+# **/*.ipynb
